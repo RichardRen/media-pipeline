@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+.venv/
+.idea/
+.DS_Store
+.git/
+.env
+.env.*
+etc/cookies.txt
+etc/video_data.json
+database/
+tmp/
+logs/

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+spec:
+  type: NodePort  # 让外部可以访问
+  selector:
+    app: postgres
+  ports:
+    - protocol: TCP
+      port: 5432       # Kubernetes 内部端口
+      targetPort: 5432 # Pod 内部 PostgreSQL 端口
+      nodePort: 30007  # 宿主机暴露的端口（范围 30000-32767）

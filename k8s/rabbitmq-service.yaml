@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq
+spec:
+  type: NodePort  # 允许外部访问
+  selector:
+    app: rabbitmq
+  ports:
+    - name: amqp
+      protocol: TCP
+      port: 5672       # Kubernetes 内部端口（AMQP）
+      targetPort: 5672 # Pod 内部 RabbitMQ 端口
+      nodePort: 30008  # 宿主机暴露的端口（AMQP）
+    - name: management
+      protocol: TCP
+      port: 15672      # Kubernetes 内部端口（Web UI）
+      targetPort: 15672
+      nodePort: 30009  # 宿主机暴露的端口（Web UI）

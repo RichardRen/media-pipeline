@@ -1,0 +1,28 @@
+# Local environments and editor state
+venv/
+.venv/
+.idea/
+.vscode/
+
+# Python caches and build artifacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Local secrets and runtime data
+.env
+.env.*
+!.env.example
+etc/cookies.txt
+k8s/secrets.yaml
+tmp/
+logs/
+
+# Local datasets and database exports
+etc/video_data.json
+database/
+
+# macOS
+.DS_Store

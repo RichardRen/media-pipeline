@@ -1,0 +1,102 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+'autonumber
+
+
+'participant Participant as Foo
+
+
+actor User order 0
+entity InfoFetcher order 10 #gold
+entity YT_DLP order 20 #red
+
+queue to_download order 60 #lightblue
+queue dead_download order 61
+entity Downloader order 70 #gold
+
+queue to_upload order 80 #lightblue
+
+queue dead_upload order 81
+entity BILIUP order 85 #pink
+entity Uploader order 90 #gold
+
+database channel_info order 98 #lightblue
+database video_info order 99 #lightblue
+
+
+activate channel_info #lightblue
+activate video_info #lightblue
+
+
+
+
+== 初始化：启动数据库、MQ，启动工作进程 ==
+||120||
+==视频列表及文件信息获取阶段==
+User -> InfoFetcher: 设置channel信息，启动
+
+activate InfoFetcher #gold
+InfoFetcher -> channel_info: 写入channel_info
+InfoFetcher -> YT_DLP: 查询视频信息
+activate YT_DLP #red
+deactivate YT_DLP
+YT_DLP --> InfoFetcher: 全频道的视频信息
+InfoFetcher -> video_info: 写入video_info
+InfoFetcher -> to_download: 生产者推送需要下载的视频信息message
+deactivate InfoFetcher
+
+||120||
+==视频下载阶段==
+
+activate Downloader #gold
+to_download -> Downloader: 消费者获取需要下载的视频message
+Downloader --> to_download: ack成功确认，释放连接
+alt message的download_retries次数不超过3次
+Downloader -> YT_DLP: 下载视频
+activate YT_DLP #red
+deactivate YT_DLP
+YT_DLP --> Downloader: 文件及下载结果
+
+    alt 下载失败
+    Downloader -> to_download: download_retries + 1 重新进入下载队列
+    else 下载成功
+    Downloader -> video_info: 更新数据库状态到downloaded
+    Downloader -> to_upload: 推送可以上传的视频信息message
+    end
+
+else 超过3次
+Downloader -> dead_download: 失败的message加入死信队列
+end
+deactivate Downloader
+
+
+
+||120||
+==视频上传阶段==
+
+
+activate Uploader #gold
+to_upload -> Uploader: 消费者获取需要上传的视频message
+Uploader --> to_upload: ack成功确认，释放连接
+alt message的upload_retries次数不超过3次
+Uploader -> BILIUP: 上传视频
+activate BILIUP #pink
+deactivate BILIUP
+BILIUP --> Uploader: 上传结果
+
+    alt 上传失败
+    Uploader -> to_upload: upload_retries + 1 重新进入上传队列
+    else 上传成功
+    Uploader -> video_info: 更新数据库状态到uploaded
+    Uploader -> Uploader:删除本地文件
+    end
+
+else 超过3次
+Uploader -> dead_upload: 失败的message加入死信队列
+end
+
+deactivate Uploader
+
+
+@enduml
