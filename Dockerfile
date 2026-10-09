@@ -1,8 +1,4 @@
 # 选择轻量级 Python 3.11 镜像
-# docker 构建根目录在~/Documents/huuazaii_workshop/PROGRAM/Python/youtube_downloader
-# docker build -t ytb_video/common_image:latest -f Dockerfile .
-# docker tag ytb_video/common_image:latest everbloomingren/ytb_video_image:latest
-# docker push everbloomingren/ytb_video_image:latest
 
 FROM python:3.11-slim
 

@@ -1,5 +1,7 @@
 # Media Pipeline
 
+[![Docker Build](https://github.com/RichardRen/media-pipeline/actions/workflows/build.yml/badge.svg)](https://github.com/RichardRen/media-pipeline/actions/workflows/build.yml)
+
 基于 RabbitMQ 与 PostgreSQL 的长任务媒体处理流水线。系统将频道元数据抓取、文案翻译、视频下载与平台上传拆分为四个可独立运行的阶段进程，通过持久化队列传递任务、通过数据库维护处理状态。
 
 **技术栈**：Python · RabbitMQ · PostgreSQL · Docker · Kubernetes · OpenAI API

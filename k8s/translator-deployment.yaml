@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: translator
-        image: everbloomingren/ytb_video_image:latest
+        image: media-pipeline:latest
         env:
         # 进程标识
         - name: PROCESS_TYPE
